@@ -1,0 +1,15 @@
+[{
+    "name"       : "file-manager",
+    "watch"      : ["bin", "routes", "app.js"],
+    "ignore_watch" : ["node_modules"],
+    "merge_logs" : true,
+    "script"     : "bin/www",
+    "env"        : {
+      "PORT"     : "8085",
+      "DEBUG"    : "file-manager:*"
+    },
+    "error_file" : "~/.pm2/file-manager.out",
+    "out_file"   : "~/.pm2/file-manager.out",
+    "pid_file"   : "~/.pm2/file-manager.pid",
+    "exec_mode"  : "fork"
+}]
