@@ -3,12 +3,20 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const config = require(__dirname + "/config.json");
+var basicAuth = require('express-basic-auth')
 
 var indexRouter = require('./routes/index');
 var fileRouter = require('./routes/file');
 var apiRouter = require('./routes/api');
 
 var app = express();
+
+
+app.use(basicAuth({
+    users: config.basic_auth_users,
+    challenge: true
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

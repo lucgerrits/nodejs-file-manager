@@ -1,3 +1,6 @@
 {
-	"path": "/home/luc/Documents/"
+	"path": "/home/luc/Documents/",
+	"basic_auth_users": {
+		"admin": "admin"
+	}
 }
