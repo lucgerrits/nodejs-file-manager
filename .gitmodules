@@ -1,6 +1,3 @@
-[submodule "public/assets/popperjs"]
-	path = public/assets/popperjs
-	url = https://github.com/FezVrasta/popper.js.git
 [submodule "public/assets/bootstrap"]
 	path = public/assets/bootstrap
 	url = https://github.com/twbs/bootstrap.git
