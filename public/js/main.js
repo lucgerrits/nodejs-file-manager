@@ -61,11 +61,30 @@ function setcontextmenu() {
                 break;
             case "upload":
                 $("#upload_file_input").click();
-            break;
+                break;
             case "download":
                 window.location.href = "/file/download/?path=" + contextmenu_data[4];
-            break;
-
+                break;
+            case "delete":
+                if (confirm("Are you sure to delete \"" + contextmenu_data[4] + "\"?") == true) {
+                    x = "You pressed OK!";
+                    var formData = new FormData();
+                    $.ajax({
+                        url: "/file/delete/?path=" + (getParameterByName("path") ? getParameterByName("path") + contextmenu_data[4] : "/" + contextmenu_data[4]),
+                        type: 'POST',
+                        data: formData,
+                        success: function(data) {
+                            location.reload();
+                        },
+                        error: function(xhr) {
+                            alert(xhr.responseText)
+                        },
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    });
+                }
+                break;
         }
         // Hide it AFTER the action was triggered
         $(".custom-menu").hide(100);
@@ -138,7 +157,6 @@ $(document).ready(function() {
             processData: false
         });
     });
-
     $("#create_folder").submit(function(e) { //form to create a new box
         e.preventDefault();
         var formData = new FormData(this);
@@ -157,5 +175,4 @@ $(document).ready(function() {
             processData: false
         });
     });
-
 });
