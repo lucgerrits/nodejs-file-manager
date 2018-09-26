@@ -5,11 +5,13 @@ var path = require('path');
 var moment = require('moment');
 var config = require(__dirname + "/../config.json");
 var formidable = require('formidable');
+var common = require(__dirname + "/../lib/common.js");
 router.get('/show', function(req, res, next) {
     var mainfolder = path.join(config.path);
     if (req.query.path) {
-        mainfolder = path.join(config.path, req.query.path + "/");
+        mainfolder = path.join(config.path, common.clear_input_path(req.query.path) + "/");
     }
+    console.log(mainfolder)
     var files = {
         data: []
     };
@@ -37,7 +39,7 @@ router.get('/show', function(req, res, next) {
                 }
                 row.push(modified);
                 row.push(isDirectory ? "directory" : "file");
-                row.push(req.query.path + "/" + file);
+                row.push(common.clear_input_path(req.query.path) + "/" + file);
                 files.data.push(row);
                 i++;
             } catch (e) {
@@ -55,7 +57,7 @@ router.get('/show', function(req, res, next) {
 router.post('/upload', function(req, res, next) {
     var mainfolder = path.join(config.path);
     if (req.query.path) {
-        mainfolder = path.join(config.path, req.query.path + "/");
+        mainfolder = path.join(config.path, common.clear_input_path(req.query.path) + "/");
     }
     if (fs.existsSync(mainfolder)) {
         var form = new formidable.IncomingForm();
@@ -80,7 +82,7 @@ router.post('/upload', function(req, res, next) {
 router.post('/mkdir', function(req, res, next) {
     var mainfolder = path.join(config.path);
     if (req.query.path) {
-        mainfolder = path.join(config.path, req.query.path + "/");
+        mainfolder = path.join(config.path, common.clear_input_path(req.query.path) + "/");
     }
     if (!fs.existsSync(mainfolder)){
         try {

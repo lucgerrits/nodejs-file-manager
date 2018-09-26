@@ -4,14 +4,14 @@ var fs = require('fs');
 var path = require('path');
 var config = require(__dirname + "/../config.json");
 var Archiver = require('archiver');
-
+var common = require(__dirname + "/../lib/common.js");
 router.get('/open', function(req, res, next) {
-	res.sendFile(path.join(config.path, req.query.path))
+	res.sendFile(path.join(config.path, common.clear_input_path(req.query.path)))
 });
 
 router.get('/download', function(req, res, next) {
 	var zip = Archiver('zip');
-	var mypath = path.join(config.path, req.query.path);
+	var mypath = path.join(config.path, common.clear_input_path(req.query.path));
     var isDirectory = fs.lstatSync(mypath).isDirectory();
     if (!isDirectory) {
     	res.attachment(path.basename(mypath));
@@ -31,7 +31,7 @@ router.get('/download', function(req, res, next) {
 });
 
 router.get('/delete', function(req, res, next) {
-	var mypath = path.join(config.path, req.query.path);
+	var mypath = path.join(config.path, common.clear_input_path(req.query.path));
 	try {
 	  fs.unlinkSync(mypath);
 	  res.send("ok");
