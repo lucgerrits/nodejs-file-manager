@@ -23,6 +23,15 @@ function popitup(url, windowName) {
     }
     return false;
 }
+var pageLoader = function(text_loader) {
+    var div = document.createElement('div');
+    div.className = "page_loader";
+    div.innerHTML = "<span class=\"page_loader_text\">" + text_loader + "</span>";
+    document.body.appendChild(div);
+}
+var removePageLoader = function() {
+    $('.page_loader').remove();
+}
 /*js for right click*/
 function setcontextmenu() {
     $(".dataTable tbody tr").bind("contextmenu", function(event) {
@@ -48,6 +57,9 @@ function setcontextmenu() {
     });
     // If the menu element is clicked
     $(".custom-menu li").click(function() {
+        if (!contextmenu_data) {
+            return;
+        }
         // This is the triggered action name
         switch ($(this).attr("data-action")) {
             // A case for each action. Your actions here
@@ -70,7 +82,8 @@ function setcontextmenu() {
                     x = "You pressed OK!";
                     var formData = new FormData();
                     $.ajax({
-                        url: "/file/delete/?path=" + (getParameterByName("path") ? getParameterByName("path") + contextmenu_data[4] : "/" + contextmenu_data[4]),
+                        //url: "/file/delete/?path=" + (getParameterByName("path") ? getParameterByName("path") + contextmenu_data[4] : "/" + contextmenu_data[4]),
+                        url: "/file/delete/?path=" + "/" + contextmenu_data[4],
                         type: 'POST',
                         data: formData,
                         success: function(data) {
@@ -91,15 +104,19 @@ function setcontextmenu() {
     });
 }
 $(document).ready(function() {
+    var path = getParameterByName("path");
     function loadtable(path) {
         if (table) {
             table.destroy();
         }
-        table = $('#example').DataTable({
+        table = $('#main_data_table').DataTable({
             "ajax": '/api/show/?path=' + encodeURIComponent(path),
             "iDisplayLength": 25,
             "initComplete": function(settings, json) {
                 setcontextmenu();
+            },
+            "oLanguage": {
+                "sEmptyTable": "Folder" + (path!="" ? ": \"" + path + "\"" : "") + " is Empty"
             }
         });
         if (path) {
@@ -114,7 +131,6 @@ $(document).ready(function() {
             $("#path").html(text);
         }
     }
-    var path = getParameterByName("path");
     if (path) {
         loadtable(path);
     } else {
@@ -132,13 +148,15 @@ $(document).ready(function() {
         }
     })
     /*js for file upload*/
-    $("#upload_file_button").click(function() {
-        $("#upload_file_input").click();
+    $(".upload_file_button").click(function() {
+        //console.log($(this).parent().find(".upload_file_input"))
+        $(this).parent().find(".upload_file_input").click();
     })
-    $("#upload_file_input").change(function() {
-        $("#upload_file").submit();
+    $(".upload_file_input").change(function() {
+        $(this).parents('form:first').submit();
     })
-    $("#upload_file").submit(function(e) { //form to create a new box
+    $(".upload_file").submit(function(e) { //form to create a new box
+        pageLoader("Uploading...");
         e.preventDefault();
         var formData = new FormData(this);
         $.ajax({
@@ -158,14 +176,17 @@ $(document).ready(function() {
         });
     });
     $("#create_folder").submit(function(e) { //form to create a new box
+        pageLoader("Creating folder...");
         e.preventDefault();
         var formData = new FormData(this);
+        var mypath = (getParameterByName("path") ? getParameterByName("path") + "/" + $("#create_folder_path").val() : "/" + $("#create_folder_path").val());
         $.ajax({
-            url: $(this).attr("action") + "?path=" + (getParameterByName("path") ? getParameterByName("path") + $("#create_folder_path").val() : "/" + $("#create_folder_path").val()),
+            url: $(this).attr("action") + "?path=" + mypath,
             type: 'POST',
             data: formData,
             success: function(data) {
-                location.reload();
+                window.location.href = "/?path=" + mypath;
+                //location.reload();
             },
             error: function(xhr) {
                 alert(xhr.responseText)
